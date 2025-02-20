@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  eureka-server:
+    build:
+      context: ./eureka
+      dockerfile: Dockerfile
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - microservices-network
+  postgres-customers:
+    image: postgres:15
+    container_name: postgres-customers
+    restart: always
+    environment:
+      POSTGRES_DB: db_customers
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5433:5432"
+    networks:
+      - microservices-network
+    volumes:
+      - postgres-customers-data:/var/lib/postgresql/data
+
+  postgres-accounts:
+    image: postgres:15
+    container_name: postgres-accounts
+    restart: always
+    environment:
+      POSTGRES_DB: db_accounts
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5434:5432"
+    networks:
+      - microservices-network
+    volumes:
+      - postgres-accounts-data:/var/lib/postgresql/data
+
+  customers-service:
+    build:
+      context: ./customers
+      dockerfile: Dockerfile
+    container_name: customers-service
+    environment:
+      SERVER_PORT: 8081
+      DB_HOST: postgres-customers
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: admin
+      EUREKA_HOST: eureka-server
+      EUREKA_PORT: 8761
+    depends_on:
+      - postgres-customers
+      - eureka-server
+    ports:
+      - "8081:8081"
+    networks:
+      - microservices-network
+
+  accounts-service:
+    build:
+      context: ./accounts
+      dockerfile: Dockerfile
+    container_name: accounts-service
+    environment:
+      SERVER_PORT: 8082
+      DB_HOST: postgres-accounts
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: admin
+      EUREKA_HOST: eureka-server
+      EUREKA_PORT: 8761
+    depends_on:
+      - postgres-accounts
+      - eureka-server
+    ports:
+      - "8082:8082"
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
+    name: microservices-network
+    driver: bridge
+
+volumes:
+  postgres-customers-data:
+  postgres-accounts-data:
