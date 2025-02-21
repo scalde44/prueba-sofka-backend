@@ -5,7 +5,7 @@ import co.com.sofka.customers.model.entity.Customer;
 
 public class CustomerFactory {
     public Customer create(CustomerCommand command) {
-        return new Customer(command.getName(), command.getGender(), command.getAge(),
+        return new Customer(null, command.getName(), command.getGender(), command.getAge(),
                 command.getIdentification(), command.getAddress(), command.getPhoneNumber(),
                 command.getPassword());
     }

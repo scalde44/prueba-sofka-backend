@@ -9,9 +9,9 @@ public class Customer extends Person {
     private String password;
     private Boolean status;
 
-    public Customer(String name, String gender, Integer age, String identification, String address, String phoneNumber,
+    public Customer(Long id, String name, String gender, Integer age, String identification, String address, String phoneNumber,
                     String password) {
-        super(name, gender, age, identification, address, phoneNumber);
+        super(id, name, gender, age, identification, address, phoneNumber);
         validateRequired(password, "password");
         this.password = password;
         this.status = true;
