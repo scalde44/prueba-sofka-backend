@@ -4,9 +4,11 @@ import co.com.sofka.accounts.command.factory.AccountFactory;
 import co.com.sofka.accounts.command.factory.BankTransactionFactory;
 import co.com.sofka.accounts.command.handler.CreateAccountHandler;
 import co.com.sofka.accounts.command.handler.CreateBankTransactionHandler;
+import co.com.sofka.accounts.command.handler.CreateDefaultAccountHandler;
 import co.com.sofka.accounts.query.handler.ReportBankTransactionHandler;
 import co.com.sofka.accounts.usecase.CreateAccountUseCase;
 import co.com.sofka.accounts.usecase.CreateBankTransactionUseCase;
+import co.com.sofka.accounts.usecase.CreateDefaultAccountUseCase;
 import co.com.sofka.accounts.usecase.CreateReportBankTransactionUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,5 +38,10 @@ public class HandlerConfig {
     @Bean
     public ReportBankTransactionHandler reportBankTransactionHandler(CreateReportBankTransactionUseCase useCase) {
         return new ReportBankTransactionHandler(useCase);
+    }
+
+    @Bean
+    public CreateDefaultAccountHandler createDefaultAccountHandler(CreateDefaultAccountUseCase useCase) {
+        return new CreateDefaultAccountHandler(useCase);
     }
 }
