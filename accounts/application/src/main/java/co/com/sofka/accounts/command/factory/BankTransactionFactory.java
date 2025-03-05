@@ -5,6 +5,6 @@ import co.com.sofka.accounts.model.entity.BankTransaction;
 
 public class BankTransactionFactory {
     public BankTransaction create(BankTransactionCommand command) {
-        return new BankTransaction(command.getTransactionType(), command.getAmount(), command.getAccountNumber());
+        return new BankTransaction(command.transactionType(), command.amount(), command.accountNumber());
     }
 }

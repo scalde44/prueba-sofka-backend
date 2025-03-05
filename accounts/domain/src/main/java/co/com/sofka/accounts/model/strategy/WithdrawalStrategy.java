@@ -4,7 +4,7 @@ import co.com.sofka.accounts.model.entity.Account;
 
 import java.math.BigDecimal;
 
-public class WithdrawalStrategy implements BalanceUpdateStrategy {
+public final class WithdrawalStrategy implements BalanceUpdateStrategy {
 
     @Override
     public void execute(Account account, BigDecimal amount) {

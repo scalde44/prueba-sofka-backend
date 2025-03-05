@@ -5,37 +5,39 @@ import co.com.sofka.domain.exception.InvalidValueException;
 import co.com.sofka.domain.exception.MandatoryValueException;
 import co.com.sofka.domain.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
+@RestControllerAdvice
+public class ErrorHandler {
+    private static final String DEFAULT_MESSAGE = "Ocurrio un error inesperado.";
 
-@ControllerAdvice
-public class ErrorHandler extends ResponseEntityExceptionHandler {
-    private static final String DEFAULT_MESSAGE = "Ocurrio un error, contactar más tarde.";
-    private static final ConcurrentHashMap<String, Integer> STATUS_CODES = new ConcurrentHashMap<>();
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    public ErrorDetail handleNotFoundException(NotFoundException ex) {
+        return new ErrorDetail(ex.getClass().getSimpleName(), ex.getMessage());
+    }
 
-    public ErrorHandler() {
-        STATUS_CODES.put(MandatoryValueException.class.getSimpleName(), HttpStatus.BAD_REQUEST.value());
-        STATUS_CODES.put(InvalidValueException.class.getSimpleName(), HttpStatus.BAD_REQUEST.value());
-        STATUS_CODES.put(IllegalArgumentException.class.getSimpleName(), HttpStatus.BAD_REQUEST.value());
-        STATUS_CODES.put(DuplicateException.class.getSimpleName(), HttpStatus.CONFLICT.value());
-        STATUS_CODES.put(NotFoundException.class.getSimpleName(), HttpStatus.NOT_FOUND.value());
+    @ExceptionHandler(DuplicateException.class)
+    @ResponseStatus(value = HttpStatus.CONFLICT)
+    public ErrorDetail handleDuplicateException(DuplicateException ex) {
+        return new ErrorDetail(ex.getClass().getSimpleName(), ex.getMessage());
+    }
+
+    @ExceptionHandler({
+            MandatoryValueException.class,
+            InvalidValueException.class,
+            IllegalArgumentException.class
+    })
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ErrorDetail handleIllegalArgumentExceptions(RuntimeException ex) {
+        return new ErrorDetail(ex.getClass().getSimpleName(), ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
-    public final ResponseEntity<ErrorDetail> handleAllExceptions(Exception exception) {
-        String exceptionName = exception.getClass().getSimpleName();
-        String message = exception.getMessage();
-        Integer code = STATUS_CODES.get(exceptionName);
-
-        if (Objects.isNull(code)) {
-            return new ResponseEntity<>(new ErrorDetail(exceptionName, DEFAULT_MESSAGE), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        return new ResponseEntity<>(new ErrorDetail(exceptionName, message), HttpStatus.valueOf(code));
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorDetail handleDefaultException(Exception ex) {
+        return new ErrorDetail(ex.getClass().getSimpleName(), DEFAULT_MESSAGE);
     }
 }

@@ -5,6 +5,6 @@ import co.com.sofka.accounts.model.entity.Account;
 
 public class AccountFactory {
     public Account create(AccountCommand command) {
-        return new Account(command.getAccountNumber(), command.getAccountType(), command.getBalance(), command.getCustomerId());
+        return new Account(command.accountNumber(), command.accountType(), command.balance(), command.customerId());
     }
 }
